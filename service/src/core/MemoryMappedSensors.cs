@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
 using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 
 namespace LibreHardwareService
@@ -48,11 +49,14 @@ namespace LibreHardwareService
 		{
 			try
 			{
+				var sidEveryonee = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+				NTAccount everyone = (NTAccount)sidEveryonee.Translate(typeof(NTAccount));
+
 				MemoryMappedFileSecurity security = new MemoryMappedFileSecurity();
-				security.AddAccessRule(new AccessRule<MemoryMappedFileRights>("everyone", MemoryMappedFileRights.Read, AccessControlType.Allow));
+				security.AddAccessRule(new AccessRule<MemoryMappedFileRights>(everyone, MemoryMappedFileRights.Read, AccessControlType.Allow));
 
 				MutexSecurity mtxSecSensors = new MutexSecurity();
-				mtxSecSensors.AddAccessRule(new MutexAccessRule("everyone", MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+				mtxSecSensors.AddAccessRule(new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
 
 				mmfSensors = MemoryMappedFile.CreateNew(Constants.FILENAME_SENSORS, MMAP_SIZE * 1024, MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None, security, System.IO.HandleInheritability.Inheritable);
 				acessorSensors = mmfSensors.CreateViewAccessor();
@@ -66,7 +70,8 @@ namespace LibreHardwareService
 					acessorAllHardware = mmfAllHardware.CreateViewAccessor();
 					
 					MutexSecurity mtxSecAllHardware = new MutexSecurity();
-					mtxSecAllHardware.AddAccessRule(new MutexAccessRule("everyone", MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+
+					mtxSecAllHardware.AddAccessRule(new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
 					mutexAllHardware = new Mutex(false, Constants.MUTEXNAME_ALLHARDWARE);
 					mutexAllHardware.SetAccessControl(mtxSecAllHardware);
 					Log.Info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\n{2}\nMutex:\n{3}\n{4}\n{5}\n", Constants.FILENAME_SENSORS, Constants.FILENAME_ALLHARDWARE, Constants.FILENAME_STATUS, Constants.MUTEXNAME_SENSORS, Constants.MUTEXNAME_ALLHARDWARE, Constants.MUTEXNAME_STATUS);
@@ -79,14 +84,15 @@ namespace LibreHardwareService
 				mutexSensors.SetAccessControl(mtxSecSensors);
 
 				MutexSecurity mtxSecStatus = new MutexSecurity();
-				mtxSecStatus.AddAccessRule(new MutexAccessRule("everyone", MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+				mtxSecStatus.AddAccessRule(new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
 				mutexStatus = new Mutex(false, Constants.MUTEXNAME_STATUS);
 				mutexStatus.SetAccessControl(mtxSecStatus);
 			}
-			catch {
+			catch(Exception ex) {
 				string errorMessage = "Error creating memory mapped files, please check if the service is running with administrative privileges (LocalSystem), or if the service is already running.";
 				Log.Error(errorMessage);
 				Debug.WriteLine(errorMessage);
+				Log.Error(ex.Message);
 				System.Environment.Exit(2);
 				throw;
 			}

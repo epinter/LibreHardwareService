@@ -650,6 +650,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -838,7 +846,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:LibreHardwareService, Version=0.1.0.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:LibreHardwareService, Version=0.2.0.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_16291D466FC5AE041A56F980F166F3FA"
@@ -1024,7 +1032,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5B3BB3D2CB7EFE86B518E6B6CD402B19"
@@ -1665,15 +1673,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:LibreHardwareService"
-        "ProductCode" = "8:{29A70E67-5951-413C-AA63-D220BFF73807}"
-        "PackageCode" = "8:{1E033103-EA96-46CC-9A65-6F253694A175}"
+        "ProductCode" = "8:{96C01949-2F85-478B-9688-9E59C9F3F508}"
+        "PackageCode" = "8:{797E679D-8912-40C5-A847-11941455C773}"
         "UpgradeCode" = "8:{C17FCDA6-C9BE-437E-94BB-5CFE3CEFE617}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:0.2.1"
         "Manufacturer" = "8:Pinter.Dev"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

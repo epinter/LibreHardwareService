@@ -339,7 +339,7 @@ namespace LibreHardwareService
 								};
 								byte[] hwStatusInfo = Utf8Json.JsonSerializer.Serialize(hwStatus);
 								byte[] hwStatusData = Utf8Json.JsonSerializer.Serialize(nvmeSmart);
-								writer.Write(8 + hwStatusInfo.Length + 4 + hwStatusData.Length);
+								writer.Write(8 + hwStatusInfo.Length + 4 + hwStatusData.Length + 1);
 								writer.Write((int)hwStatusInfo.Length);
 								writer.Write((int)hwStatus.HwStatusType);
 								writer.Write(hwStatusInfo);

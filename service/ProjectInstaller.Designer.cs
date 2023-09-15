@@ -45,6 +45,8 @@
             this.serviceInstaller1.ServiceName = "LibreHardwareService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             this.serviceInstaller1.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterInstall);
+            this.serviceInstaller1.BeforeInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_BeforeInstall);
+            this.serviceInstaller1.BeforeUninstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_BeforeUninstall);
             // 
             // ProjectInstaller
             // 

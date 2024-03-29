@@ -16,9 +16,7 @@ This service writes sensors data to shared memory (see [models](https://github.c
 
 ## Requiremens
 
-.NET Framework 4.7.2
-
-To build, use Visual Studio 2022.
+.NET 8.0
 
 ## Why another way to access LibreHardwareMonitor sensors ?
 
@@ -34,7 +32,7 @@ In the installation directory, execute ShowSensors.exe as administrator.
 
 ## Configuration
 
-The service can be configured using LibreHardwareService.exe.config:
+The service can be configured using appsettings.json:
 
 ```
         /// indexFormat (default 2)

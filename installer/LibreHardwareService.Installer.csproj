@@ -1,0 +1,13 @@
+<Project Sdk="WixToolset.Sdk/4.0.0">
+  <PropertyGroup>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputName>LibreHardwareService</OutputName>
+  </PropertyGroup>
+ 
+  <ItemGroup>
+    <ProjectReference Include="..\service\LibreHardwareService.csproj" />
+    <ProjectReference Include="..\showsensors\LibreHardwareService.ShowSensors.csproj" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
+    <BindVariable Include="WixUILicenseRtf=LICENSE.rtf" />
+  </ItemGroup>
+</Project>

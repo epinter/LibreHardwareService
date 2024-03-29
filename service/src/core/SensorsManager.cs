@@ -18,6 +18,7 @@ using MessagePack;
 using Microsoft.IO;
 using LibreHardwareMonitor.Hardware.Storage;
 using System.Linq;
+using static LibreHardwareService.ConfigHelper;
 
 namespace LibreHardwareService
 {
@@ -29,7 +30,7 @@ namespace LibreHardwareService
 		private readonly RecyclableMemoryStreamManager recyclableMemoryStreamManager;
 		private DateTime lastHwStatusUpdate = DateTime.MinValue;
 
-		public bool IsDebug { get; internal set; }
+		public bool isDebug { get; internal set; }
 
 		public SensorsManager()
 		{
@@ -84,6 +85,7 @@ namespace LibreHardwareService
 			{
 				foreach (IHardware h in computer.Hardware)
 				{
+#pragma warning disable CS8601 // Possible null reference assignment.
 					DataHardware hardware = new DataHardware
 					{
 						Name = h.Name,
@@ -93,7 +95,7 @@ namespace LibreHardwareService
 						Sensors = new List<DataSensor>(),
 						SubHardware = new List<DataHardware>()
 					};
-					if (Config.Feature.EnableMemoryMapAllHardwareData)
+					if (Config.FeatureEnableMemoryMapAllHardwareData)
 					{
 						root.Add(hardware);
 						byte[] hardwareData = new byte[0];
@@ -110,7 +112,8 @@ namespace LibreHardwareService
 							Sensors = new List<DataSensor>(),
 							SubHardware = new List<DataHardware>()
 						};
-						if (Config.Feature.EnableMemoryMapAllHardwareData)
+#pragma warning restore CS8601 // Possible null reference assignment.
+						if (Config.FeatureEnableMemoryMapAllHardwareData)
 						{
 							hardware.SubHardware.Add(subHardware);
 
@@ -120,6 +123,7 @@ namespace LibreHardwareService
 						}
 						foreach (ISensor s in sh.Sensors)
 						{
+#pragma warning disable CS8629 // Nullable value type may be null.
 							DataSensor sensor = new DataSensor
 							{
 								Name = s.Name,
@@ -134,8 +138,9 @@ namespace LibreHardwareService
 								ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
 								Values = FromHardwareSensorValue(s.Values)
 							};
+#pragma warning restore CS8629 // Nullable value type may be null.
 							byte[] sensorData = new byte[0];
-							if (Config.Feature.EnableMemoryMapAllHardwareData)
+							if (Config.FeatureEnableMemoryMapAllHardwareData)
 							{
 								subHardware.Sensors.Add(sensor);
 							}
@@ -167,7 +172,7 @@ namespace LibreHardwareService
 							};
 							byte[] sensorData = new byte[0];
 
-							if (Config.Feature.EnableMemoryMapAllHardwareData)
+							if (Config.FeatureEnableMemoryMapAllHardwareData)
 							{
 								hardware.Sensors.Add(sensor);
 							}
@@ -178,7 +183,7 @@ namespace LibreHardwareService
 							stream.WriteByte(0);
 						} catch (Exception ex)
 						{
-							if(IsDebug) Debug.WriteLine(ex.ToString());
+							if(isDebug) Debug.WriteLine(ex.ToString());
 							throw;
 						}
 					}
@@ -194,7 +199,7 @@ namespace LibreHardwareService
 				}
 
 				byte[] dataBytes = stream.ToArray();
-				if (IsDebug)
+				if (isDebug)
 				{
 					Console.WriteLine(" WRITING INDEX ---------- {0} bytes -- {1} ", indexBytes.Length, Utf8Json.JsonSerializer.PrettyPrint(indexBytes));
 					Console.WriteLine(" WRITING DATA ---------- {0} bytes -- {1} ", dataBytes.Length, Encoding.UTF8.GetString(dataBytes));
@@ -207,11 +212,11 @@ namespace LibreHardwareService
 				};
 				MemoryMappedSensors.Instance.WriteSensors(indexBytes, dataBytes, m);
 
-				if (Config.Feature.EnableMemoryMapAllHardwareData)
+				if (Config.FeatureEnableMemoryMapAllHardwareData)
 				{
 					byte[] rootBytes = Utf8Json.JsonSerializer.Serialize(root);
 					MemoryMappedSensors.Instance.WriteHardware(rootBytes, m);
-					if (IsDebug)
+					if (isDebug)
 					{
 						Console.WriteLine(" WRITING ROOT ---------- {0} bytes -- {1} ", rootBytes.Length, Encoding.UTF8.GetString(rootBytes));
 					}
@@ -267,7 +272,9 @@ namespace LibreHardwareService
 										break;
 									}
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 									SmartAttribute attr = storage.SmartAttributes.FirstOrDefault(s => s.Id == a.Id);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 									string attrName = "Unknown";
 									if (attr != null)
 									{
@@ -303,7 +310,9 @@ namespace LibreHardwareService
 								writer.Write((int) hwStatusData.Length);
 								writer.Write(hwStatusData);
 								writer.Write((byte)0);
-								Console.WriteLine(Utf8Json.JsonSerializer.PrettyPrint(hwStatusData));
+								if(isDebug) {
+									Console.WriteLine(Utf8Json.JsonSerializer.PrettyPrint(hwStatusData));
+								}
 							}
 							else if (h is NVMeGeneric)
 							{

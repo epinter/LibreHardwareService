@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "LibreHardwareService" ?>
+<?define Manufacturer = "Pinter.Dev" ?>
+<?define Version = "!(bind.FileVersion.LibreHardwareService.exe)" ?>
+<?define UpgradeCode = "bd6566bc-3e3e-4be2-ad56-c40e08172ab7" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+    <Package Name="$(Name)"
+             Manufacturer="$(Manufacturer)"
+             Version="$(Version)"
+             UpgradeCode="$(var.UpgradeCode)"
+             Compressed="true">
+        
+        <MediaTemplate EmbedCab="yes" />
+
+        <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+
+        <!-- Allow upgrades and prevent downgrades -->
+        <MajorUpgrade DowngradeErrorMessage="A later version of LibreHardwareService is already installed. Setup will now exit." />
+
+        <!-- Define the directory structure -->
+        <StandardDirectory Id="ProgramFiles64Folder">
+            <!-- Create a folder within the parent folder given the name -->
+            <Directory Id="INSTALLFOLDER" Name="$(Name)" />
+        </StandardDirectory >
+
+        <!-- The files inside this DirectoryRef are linked to
+             the App.WindowsService directory via INSTALLFOLDER -->
+        <DirectoryRef Id="INSTALLFOLDER">
+
+            <!-- Create a single component which is the App.WindowsService.exe file -->
+            <Component Id="ServiceExecutable" Bitness="always64" Guid="e5fc5f47-a5dc-4141-8644-2dd5f18321c3">
+                
+                <!-- Copies the App.WindowsService.exe file using the
+                     project reference preprocessor variables -->
+                <File Id="LibreHardwareService.exe"
+                      Source="$(var.LibreHardwareService.ProjectDir)artifacts\publish\LibreHardwareService\release_win-x64\LibreHardwareService.exe"
+                      KeyPath="true" />
+                <File Id="ShowSensors.exe"
+                      Source="$(var.LibreHardwareService.ShowSensors.ProjectDir)artifacts\publish\LibreHardwareService.ShowSensors\release_win-x64\ShowSensors.exe"/>
+
+                <File Id="appsettings.json" Source="$(var.LibreHardwareService.ProjectDir)artifacts\publish\LibreHardwareService\release_win-x64\\appsettings.json"/>
+
+                <!-- Remove all files from the INSTALLFOLDER on uninstall -->
+                <RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+
+                <!-- Tell WiX to install the Service -->
+                <ServiceInstall Id="ServiceInstaller"
+                                Type="ownProcess"
+                                Name="LibreHardwareService"
+                                DisplayName="$(Name)"
+                                Description="A hardware sensors provider."
+                                Start="auto"
+                                ErrorControl="normal" />
+
+                <!-- Tell WiX to start the Service -->
+                <ServiceControl Id="StartService"
+                                Start="install"
+                                Stop="both"
+                                Remove="uninstall"
+                                Name="LibreHardwareService"
+                                Wait="true" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Tell WiX to install the files -->
+        <Feature Id="Service" Title="LibreHardwareService Setup" Level="1">
+            <ComponentRef Id="ServiceExecutable" />
+        </Feature>
+
+    </Package>
+</Wix>

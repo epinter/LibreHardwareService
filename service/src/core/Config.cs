@@ -14,88 +14,55 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibreHardwareService
-{
-	internal class Config
-	{
-		/// <summary>
-		/// Format of the index that is written on the memory map
-		/// 1 = JSON (easier to parse and highly compatible)
-		/// 2 - MessagePack (best performance)
-		/// </summary>
-		internal static int IndexFormat
-		{
-			get
-			{
-				return Properties.Settings.Default.indexFormat;
-			}
-		}
+namespace LibreHardwareService {
+    internal static class ConfigHelper {
+#pragma warning disable CS8618
+		private static IConfiguration configuration;
+#pragma warning restore CS8618
+		public static class Config {
+            public static void initialize(IConfiguration configuration) {
+                ConfigHelper.configuration = configuration;
+            }
 
-		/// <summary>
-		/// Minimum interval (minutes) to log warning when data written is above limit. To avoid logspam.
-		/// </summary>
-		internal static int MemoryMapLimitLogIntervalMinutes { get
-			{
-				return Properties.Settings.Default.memoryMapLimitLogIntervalMinutes;
-			}
-		}
+            // public Config(IConfiguration configuration) {
+            //     this.configuration = configuration;
+            // }
 
-		/// <summary>
-		/// Time interval in seconds to collect the sensor data and write to memory map.
-		/// </summary>
-		internal static int UpdateIntervalSeconds
-		{
-			get
-			{
-				return Properties.Settings.Default.updateIntervalSeconds;
-			}
-		}
+            /// <summary>
+            /// Format of the index that is written on the memory map
+            /// 1 = JSON (easier to parse and highly compatible)
+            /// 2 - MessagePack (best performance)
+            /// </summary>
+            public static int IndexFormat => configuration.GetValue<int>("Settings:indexFormat");
 
-		/// <summary>
-		/// Time interval in minutes to collect the hardware status (like storage smart attributes) and write to memory map.
-		/// </summary>
-		internal static int HwStatusUpdateIntervalMinutes
-		{
-			get
-			{
-				return Properties.Settings.Default.hwStatusUpdateIntervalMinutes;
-			}
-		}
+            /// <summary>
+            /// Minimum interval (minutes) to log warning when data written is above limit. To avoid logspam.
+            /// </summary>
+            public static int MemoryMapLimitLogIntervalMinutes => configuration.GetValue<int>("Settings:memoryMapLimitLogIntervalMinutes");
 
-		/// <summary>
-		/// Time window to keep sensor values. The number of values kept in memory will increase when the window is increased.
-		/// Increases CPU usage and memory usage.
-		/// </summary>
-		internal static int SensorsTimeWindowSeconds
-		{
-			get
-			{
-				return Properties.Settings.Default.sensorsTimeWindowSeconds;
-			}
-		}
+            /// <summary>
+            /// Time interval in seconds to collect the sensor data and write to memory map.
+            /// </summary>
+            public static int UpdateIntervalSeconds => configuration.GetValue<int>("Settings:updateIntervalSeconds");
 
-		/// <summary>
-		/// Limit of the memory map. The default is 1MB.
-		/// </summary>
-		internal static int MemoryMapLimitKb
-		{
-			get
-			{
-				return Properties.Settings.Default.memoryMapLimitKb;
-			}
-		}
-
-		internal class Feature
-		{
 			/// <summary>
-			/// Then enabled, all hardware data tree and sensors will be sent. If disabled, only the sensors data will be written.
-			/// The sensors data is sufficient for most usages. Only enable if you need the tree in json format.
-			/// Increases CPU and memory usage.
+			/// Time interval in minutes to collect the hardware status (like storage smart attributes) and write to memory map.
 			/// </summary>
-			internal static bool EnableMemoryMapAllHardwareData { get {
-					return Properties.Settings.Default.featureEnableMemoryMapAllHardwareData;
-				}
-			}
-		}
-	}
+			public static int HwStatusUpdateIntervalMinutes => configuration.GetValue<int>("Settings:hwStatusUpdateIntervalMinutes");
+
+			/// <summary>
+			/// Time window to keep sensor values. The number of values kept in memory will increase when the window is increased.
+			/// Increases CPU usage and memory usage.
+			/// </summary>
+			public static int SensorsTimeWindowSeconds => configuration.GetValue<int>("Settings:sensorsTimeWindowSeconds");
+
+			/// <summary>
+			/// Limit of the memory map. The default is 1MB.
+			/// </summary>
+			public static int MemoryMapLimitKb => configuration.GetValue<int>("Settings:memoryMapLimitKb");
+
+            public static bool FeatureEnableMemoryMapAllHardwareData =>
+                configuration.GetValue<bool>("Settings:Feature:featureEnableMemoryMapAllHardwareData");
+        }
+    }
 }

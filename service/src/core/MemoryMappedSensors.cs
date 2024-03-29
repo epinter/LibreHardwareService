@@ -14,14 +14,18 @@ using System.IO.MemoryMappedFiles;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using static LibreHardwareService.ConfigHelper;
 
 namespace LibreHardwareService
 {
+	#pragma warning disable CA1416 // Validate platform compatibility
 	internal class MemoryMappedSensors
 	{
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		private static MemoryMappedFile mmfSensors;
 		private static MemoryMappedFile mmfAllHardware;
 		private static MemoryMappedFile mmfStatus;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 		private readonly int MMAP_SIZE = Config.MemoryMapLimitKb;
 		private readonly MemoryMappedViewAccessor acessorSensors;
@@ -45,7 +49,9 @@ namespace LibreHardwareService
 			internal static readonly MemoryMappedSensors instance = new MemoryMappedSensors();
 		}
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		private MemoryMappedSensors()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		{
 			try
 			{
@@ -58,15 +64,54 @@ namespace LibreHardwareService
 				MutexSecurity mtxSecSensors = new MutexSecurity();
 				mtxSecSensors.AddAccessRule(new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
 
-				mmfSensors = MemoryMappedFile.CreateNew(Constants.FILENAME_SENSORS, MMAP_SIZE * 1024, MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None, security, System.IO.HandleInheritability.Inheritable);
+				// mmfSensors = MemoryMappedFile.CreateNew(Constants.FILENAME_SENSORS,
+				// 										MMAP_SIZE * 1024,
+				// 										MemoryMappedFileAccess.ReadWrite,
+				// 										MemoryMappedFileOptions.None,
+				//										security,
+				// 										System.IO.HandleInheritability.Inheritable);
+
+				mmfSensors = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_SENSORS,
+														MMAP_SIZE * 1024,
+														MemoryMappedFileAccess.ReadWrite,
+														MemoryMappedFileOptions.None,
+														security,
+														System.IO.HandleInheritability.Inheritable);
+
 				acessorSensors = mmfSensors.CreateViewAccessor();
 
-				mmfStatus = MemoryMappedFile.CreateNew(Constants.FILENAME_STATUS, MMAP_SIZE * 1024, MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None, security, System.IO.HandleInheritability.Inheritable);
+				// mmfStatus = MemoryMappedFile.CreateNew(Constants.FILENAME_STATUS,
+				// 										MMAP_SIZE * 1024,
+				// 										MemoryMappedFileAccess.ReadWrite,
+				// 										MemoryMappedFileOptions.None,
+				// 										security,
+				// 										System.IO.HandleInheritability.Inheritable);
+
+				mmfStatus = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_STATUS,
+														MMAP_SIZE * 1024,
+														MemoryMappedFileAccess.ReadWrite,
+														MemoryMappedFileOptions.None,
+														security,
+														System.IO.HandleInheritability.Inheritable);
+
 				acessorStatus = mmfStatus.CreateViewAccessor();
 
-				if (Config.Feature.EnableMemoryMapAllHardwareData)
+				if (Config.FeatureEnableMemoryMapAllHardwareData)
 				{
-					mmfAllHardware = MemoryMappedFile.CreateNew(Constants.FILENAME_ALLHARDWARE, MMAP_SIZE * 1024, MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None, security, System.IO.HandleInheritability.Inheritable);
+					// mmfAllHardware = MemoryMappedFile.CreateNew(Constants.FILENAME_ALLHARDWARE,
+					// 									MMAP_SIZE * 1024,
+					// 									MemoryMappedFileAccess.ReadWrite,
+					// 									MemoryMappedFileOptions.None,
+					// 									security,
+					// 									System.IO.HandleInheritability.Inheritable);
+
+					mmfAllHardware = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_ALLHARDWARE,
+														MMAP_SIZE * 1024,
+														MemoryMappedFileAccess.ReadWrite,
+														MemoryMappedFileOptions.None,
+														security,
+														System.IO.HandleInheritability.Inheritable);
+
 					acessorAllHardware = mmfAllHardware.CreateViewAccessor();
 					
 					MutexSecurity mtxSecAllHardware = new MutexSecurity();
@@ -185,7 +230,7 @@ namespace LibreHardwareService
 
 		public void WriteHardware(byte[] data, Metadata metadata)
 		{
-			if (Config.Feature.EnableMemoryMapAllHardwareData)
+			if (Config.FeatureEnableMemoryMapAllHardwareData)
 			{
 				try
 				{
@@ -257,7 +302,7 @@ namespace LibreHardwareService
 				Log.Error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (data.Length / 1024), MMAP_SIZE);
 				lastLogLimit = DateTime.Now;
 			}
-			Console.WriteLine("     -- WRITING {0}B of data", data.Length);
+			Debug.WriteLine("     -- WRITING {0}B of data", data.Length);
 			int metadataBlockSize = 4 + metadata.MetadataSize;
 
 			acessor.Write(0, metadata.MetadataSize);
@@ -267,4 +312,6 @@ namespace LibreHardwareService
 			acessor.WriteArray(metadataBlockSize + 4, data, 0, data.Length);
 		}
 	}
+	#pragma warning restore CA1416 // Validate platform compatibility
+
 }

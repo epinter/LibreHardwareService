@@ -15,41 +15,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibreHardwareService
-{
-	internal class Log
-	{
-		public static string eventLogSource = "LibreHardwareService";
+namespace LibreHardwareService {
+    internal class Log {
+        internal static ILoggerFactory LoggerFactory = new LoggerFactory();
+        internal static ILogger CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
+        internal static ILogger CreateLogger(string categoryName) => LoggerFactory.CreateLogger(categoryName);
+        private static ILogger logger = CreateLogger("LibreHardwareService");
 
-		public static void Info(string message, params object[] args)
-		{
-			Info(String.Format(message, args));
-		}
+        public static string eventLogSource = "LibreHardwareService";
 
-		public static void Error(string message, params object[] args)
-		{
-			Error(String.Format(message, args));
-		}
+#pragma warning disable CA1416  // Validate platform compatibility
+        public static void Info(string message, params object[] args) {
+            logger.LogInformation(String.Format(message, args));
+            EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Information);
+        }
 
-		public static void Warning(string message, params object[] args)
-		{
-			Warning(String.Format(message, args));
-		}
+        public static void Error(string message, params object[] args) {
+            logger.LogError(String.Format(message, args));
+            EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Error);
+        }
 
-		public static void Info(string message)
-		{
-			EventLog.WriteEntry(eventLogSource, String.Format(message), EventLogEntryType.Information);
-		}
-
-		public static void Error(string message)
-		{
-			EventLog.WriteEntry(eventLogSource, String.Format(message), EventLogEntryType.Error);
-		}
-
-		public static void Warning(string message)
-		{
-			EventLog.WriteEntry(eventLogSource, String.Format(message), EventLogEntryType.Warning);
-		}
-
-	}
+        public static void Warning(string message, params object[] args) {
+            logger.LogWarning(String.Format(message, args));
+            EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Warning);
+        }
+#pragma warning restore CA1416  // Validate platform compatibility
+    }
 }

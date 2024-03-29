@@ -93,7 +93,7 @@ namespace ShowSensors
 								break;
 							}
 
-							SmartAttribute attr = storage.SmartAttributes.FirstOrDefault(s => s.Id == a.Id);
+							SmartAttribute? attr = storage.SmartAttributes.FirstOrDefault(s => s.Id == a.Id);
 							string attrName = "Unknown";
 							if (attr != null)
 							{

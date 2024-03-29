@@ -3,7 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-/.vscode/
+/.vscode/**
+!/.vscode/tasks.json
 
 # User-specific files
 *.rsuser

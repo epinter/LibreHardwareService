@@ -1,0 +1,130 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Project publish installer",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Project build Release",
+                "Project publish Release",
+                "Project build installer"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project build Debug",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project build Release",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-c",
+                "Release"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project publish Release",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "-c",
+                "Release"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project build installer",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "installer",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project clean all",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Project clean release",
+                "Project clean debug",
+                "Project clean installer debug",
+                "Project clean installer release"
+            ],
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project clean release",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project clean debug",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project clean installer debug",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "installer",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Project clean installer release",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "installer",
+                "-c",
+                "release"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+    ]
+}

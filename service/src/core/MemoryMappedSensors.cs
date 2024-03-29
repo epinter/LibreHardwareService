@@ -88,11 +88,11 @@ namespace LibreHardwareService {
                         new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
                     mutexAllHardware = new Mutex(false, Constants.MUTEXNAME_ALLHARDWARE);
                     mutexAllHardware.SetAccessControl(mtxSecAllHardware);
-                    Log.Info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\n{2}\nMutex:\n{3}\n{4}\n{5}\n",
+                    Log.info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\n{2}\nMutex:\n{3}\n{4}\n{5}\n",
                              Constants.FILENAME_SENSORS, Constants.FILENAME_ALLHARDWARE, Constants.FILENAME_STATUS,
                              Constants.MUTEXNAME_SENSORS, Constants.MUTEXNAME_ALLHARDWARE, Constants.MUTEXNAME_STATUS);
                 } else {
-                    Log.Info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\nMutex:\n{2}\n{3}\n",
+                    Log.info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\nMutex:\n{2}\n{3}\n",
                              Constants.FILENAME_SENSORS, Constants.FILENAME_STATUS, Constants.MUTEXNAME_SENSORS,
                              Constants.MUTEXNAME_STATUS);
                 }
@@ -107,15 +107,15 @@ namespace LibreHardwareService {
             } catch (Exception ex) {
                 string errorMessage =
                     "Error creating memory mapped files, please check if the service is running with administrative privileges (LocalSystem), or if the service is already running.";
-                Log.Error(errorMessage);
+                Log.error(errorMessage);
                 Debug.WriteLine(errorMessage);
-                Log.Error(ex.Message);
+                Log.error(ex.Message);
                 System.Environment.Exit(2);
                 throw;
             }
         }
 
-        public static MemoryMappedSensors Instance {
+        public static MemoryMappedSensors instance {
             get { return Nested.instance; }
         }
 
@@ -133,7 +133,7 @@ namespace LibreHardwareService {
             mmfAllHardware?.Dispose();
         }
 
-        public void WriteSensors(byte[] index, byte[] data, Metadata metadata) {
+        public void writeSensors(byte[] index, byte[] data, Metadata metadata) {
             try {
                 // Acquire mutex ownership with timeout, the client should open the mutex before read the content and release it
                 // afterwards.
@@ -146,7 +146,7 @@ namespace LibreHardwareService {
                 int length = index.Length + data.Length;
                 if ((length / 1024) > MMAP_SIZE &&
                     lastLogLimit < DateTime.Now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
-                    Log.Error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (length / 1024),
+                    Log.error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (length / 1024),
                               MMAP_SIZE);
                     lastLogLimit = DateTime.Now;
                 }
@@ -185,7 +185,7 @@ namespace LibreHardwareService {
                 acessorSensors.Write(indexOffset + index.Length, (int)0);  // 4-bytes padding
                 acessorSensors.WriteArray(dataOffset, data, 0, data.Length);
             } catch (Exception ex) {
-                Log.Error("Error writing to memory mapped file, service stopping: " + ex.Message);
+                Log.error("Error writing to memory mapped file, service stopping: " + ex.Message);
                 System.Environment.Exit(1);
             }
             try {
@@ -196,7 +196,7 @@ namespace LibreHardwareService {
             }
         }
 
-        public void WriteHardware(byte[] data, Metadata metadata) {
+        public void writeHardware(byte[] data, Metadata metadata) {
             if (Config.FeatureEnableMemoryMapAllHardwareData) {
                 try {
                     // Acquire mutex ownership with timeout, the client should open the mutex before read the content and release
@@ -208,9 +208,9 @@ namespace LibreHardwareService {
                 }
 
                 try {
-                    Write(data, acessorAllHardware, metadata);
+                    write(data, acessorAllHardware, metadata);
                 } catch (Exception ex) {
-                    Log.Error("Error writing to memory mapped file, service stopping: " + ex.Message);
+                    Log.error("Error writing to memory mapped file, service stopping: " + ex.Message);
                     System.Environment.Exit(1);
                 }
 
@@ -223,7 +223,7 @@ namespace LibreHardwareService {
             }
         }
 
-        public void WriteStatus(byte[] data, Metadata metadata) {
+        public void writeStatus(byte[] data, Metadata metadata) {
             try {
                 // Acquire mutex ownership with timeout, the client should open the mutex before read the content and release it
                 // afterwards.
@@ -234,9 +234,9 @@ namespace LibreHardwareService {
             }
 
             try {
-                Write(data, acessorStatus, metadata);
+                write(data, acessorStatus, metadata);
             } catch (Exception ex) {
-                Log.Error("Error writing to memory mapped file, service stopping: " + ex.Message);
+                Log.error("Error writing to memory mapped file, service stopping: " + ex.Message);
                 System.Environment.Exit(1);
             }
 
@@ -248,10 +248,10 @@ namespace LibreHardwareService {
             }
         }
 
-        private void Write(byte[] data, MemoryMappedViewAccessor acessor, Metadata metadata) {
+        private void write(byte[] data, MemoryMappedViewAccessor acessor, Metadata metadata) {
             if ((data.Length / 1024) > MMAP_SIZE &&
                 lastLogLimit < DateTime.Now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
-                Log.Error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (data.Length / 1024),
+                Log.error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (data.Length / 1024),
                           MMAP_SIZE);
                 lastLogLimit = DateTime.Now;
             }

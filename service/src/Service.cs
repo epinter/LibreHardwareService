@@ -59,12 +59,12 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         return Task.CompletedTask;
     }
     private void onStopped() {
-        Log.Info(hostEnvironment.ApplicationName + " stopped");
+        Log.info(hostEnvironment.ApplicationName + " stopped");
         if (isDebug) {
             Debug.WriteLine("{0}: Stopping LibreHardwareService", hostEnvironment.ApplicationName);
         }
 
-        sensorsManager.Close();
+        sensorsManager.close();
         timer.Stop();
         timer.Dispose();
         worker?.CancelAsync();
@@ -73,7 +73,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     private void onStarted() {
         startService();
-        Log.Info(hostEnvironment.ApplicationName + " started");
+        Log.info(hostEnvironment.ApplicationName + " started");
     }
 
     public void onTimeInterval(object? sender, ElapsedEventArgs args) {
@@ -87,7 +87,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     private void updateSensors(object? sender, DoWorkEventArgs e) {
         Debug.WriteLine("{0}: UpdateSensors", hostEnvironment.ApplicationName);
 
-        sensorsManager.UpdateHardwareSensors();
+        sensorsManager.updateHardwareSensors();
     }
 
     public void startService() {
@@ -103,8 +103,8 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         timer.Interval = interval;
         timer.Elapsed += new ElapsedEventHandler(onTimeInterval);
         timer.Enabled = true;
-        Log.Info(String.Format("Starting '{0}' with interval set to {1}ms, sensors time-window to {2} minutes",
-                               hostEnvironment.ApplicationName, interval, sensorsManager.GetSensorsTimeWindow()));
+        Log.info(String.Format("Starting '{0}' with interval set to {1}ms, sensors time-window to {2} minutes",
+                               hostEnvironment.ApplicationName, interval, sensorsManager.getSensorsTimeWindow()));
     }
 
     private int readUpdateIntervalSetting() {

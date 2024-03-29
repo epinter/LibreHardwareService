@@ -41,17 +41,17 @@ namespace LibreHardwareService {
             recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
-        public int GetSensorsTimeWindow() {
+        public int getSensorsTimeWindow() {
             return sensorsTimeWindow.Minutes;
         }
 
-        public void UpdateHardwareSensors() {
+        public void updateHardwareSensors() {
             computer.Accept(updateVisitor);
 
             computer.Accept(new SensorVisitor(delegate(ISensor sensor) { sensor.ValuesTimeWindow = sensorsTimeWindow; }));
 
             if (lastHwStatusUpdate < DateTime.Now.AddMinutes(-1 * Config.HwStatusUpdateIntervalMinutes)) {
-                UpdateHardwareStatus();
+                updateHardwareStatus();
                 lastHwStatusUpdate = DateTime.Now;
             }
 
@@ -101,7 +101,7 @@ namespace LibreHardwareService {
                                                                  Max = (float)s.Max,
                                                                  Min = (float)s.Min,
                                                                  ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
-                                                                 Values = FromHardwareSensorValue(s.Values) };
+                                                                 Values = fromHardwareSensorValue(s.Values) };
 #pragma warning restore CS8629  // Nullable value type may be null.
                             byte[] sensorData = new byte[0];
                             if (Config.FeatureEnableMemoryMapAllHardwareData) {
@@ -129,7 +129,7 @@ namespace LibreHardwareService {
                                                                  Max = s.Max != null ? (float)s.Max : 0.0f,
                                                                  Min = s.Min != null ? (float)s.Min : 0.0f,
                                                                  ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
-                                                                 Values = FromHardwareSensorValue(s.Values) };
+                                                                 Values = fromHardwareSensorValue(s.Values) };
                             byte[] sensorData = new byte[0];
 
                             if (Config.FeatureEnableMemoryMapAllHardwareData) {
@@ -168,11 +168,11 @@ namespace LibreHardwareService {
                     UpdateInterval = Config.UpdateIntervalSeconds,
                     LastUpdate = lastUpdate,
                 };
-                MemoryMappedSensors.Instance.WriteSensors(indexBytes, dataBytes, m);
+                MemoryMappedSensors.instance.writeSensors(indexBytes, dataBytes, m);
 
                 if (Config.FeatureEnableMemoryMapAllHardwareData) {
                     byte[] rootBytes = Utf8Json.JsonSerializer.Serialize(root);
-                    MemoryMappedSensors.Instance.WriteHardware(rootBytes, m);
+                    MemoryMappedSensors.instance.writeHardware(rootBytes, m);
                     if (isDebug) {
                         Console.WriteLine(" WRITING ROOT ---------- {0} bytes -- {1} ", rootBytes.Length,
                                           Encoding.UTF8.GetString(rootBytes));
@@ -181,7 +181,7 @@ namespace LibreHardwareService {
             }
         }
 
-        List<DataSensorValue> FromHardwareSensorValue(IEnumerable<LibreHardwareMonitor.Hardware.SensorValue> from) {
+        List<DataSensorValue> fromHardwareSensorValue(IEnumerable<LibreHardwareMonitor.Hardware.SensorValue> from) {
             List<DataSensorValue> ret = new List<DataSensorValue>();
             foreach (LibreHardwareMonitor.Hardware.SensorValue fh in from) {
                 ret.Add(new DataSensorValue {
@@ -193,7 +193,7 @@ namespace LibreHardwareService {
             return ret;
         }
 
-        public void UpdateHardwareStatus() {
+        public void updateHardwareStatus() {
             long lastUpdate = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             using (MemoryStream stream = recyclableMemoryStreamManager.GetStream()) {
@@ -297,12 +297,12 @@ namespace LibreHardwareService {
                         LastUpdate = lastUpdate,
                     };
 
-                    MemoryMappedSensors.Instance.WriteStatus(stream.ToArray(), m);
+                    MemoryMappedSensors.instance.writeStatus(stream.ToArray(), m);
                 }
             }
         }
 
-        public void Close() {
+        public void close() {
             computer.Close();
         }
     }

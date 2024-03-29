@@ -12,25 +12,25 @@ using System.Diagnostics;
 
 namespace LibreHardwareService {
     internal class Log {
-        internal static ILoggerFactory LoggerFactory = new LoggerFactory();
-        internal static ILogger CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
-        internal static ILogger CreateLogger(string categoryName) => LoggerFactory.CreateLogger(categoryName);
-        private static ILogger logger = CreateLogger("LibreHardwareService");
+        internal static ILoggerFactory loggerFactory = new LoggerFactory();
+        internal static ILogger createLogger<T>() => loggerFactory.CreateLogger<T>();
+        internal static ILogger createLogger(string categoryName) => loggerFactory.CreateLogger(categoryName);
+        private static ILogger logger = createLogger("LibreHardwareService");
 
         public static string eventLogSource = "LibreHardwareService";
 
 #pragma warning disable CA1416  // Validate platform compatibility
-        public static void Info(string message, params object[] args) {
+        public static void info(string message, params object[] args) {
             logger.LogInformation(String.Format(message, args));
             EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Information);
         }
 
-        public static void Error(string message, params object[] args) {
+        public static void error(string message, params object[] args) {
             logger.LogError(String.Format(message, args));
             EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Error);
         }
 
-        public static void Warning(string message, params object[] args) {
+        public static void warning(string message, params object[] args) {
             logger.LogWarning(String.Format(message, args));
             EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Warning);
         }

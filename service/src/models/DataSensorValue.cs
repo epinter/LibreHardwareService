@@ -8,18 +8,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-using System;
 using System.Runtime.Serialization;
 
-namespace LibreHardwareService
-{
-	public struct DataSensorValue
-	{
-		[DataMember(Name = "value")]
-		public float Value { get; set; }
+namespace LibreHardwareService {
+    public struct DataSensorValue {
+        [DataMember(Name = "value")]
+        public float Value { get; set; }
 
-		[DataMember(Name = "time")]
-		public DateTime Time { get; set; }
-
-	}
+        [DataMember(Name = "time")]
+        public DateTime Time { get; set; }
+    }
 }

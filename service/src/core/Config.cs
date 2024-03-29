@@ -8,18 +8,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace LibreHardwareService {
     internal static class ConfigHelper {
 #pragma warning disable CS8618
-		private static IConfiguration configuration;
+        private static IConfiguration configuration;
 #pragma warning restore CS8618
-		public static class Config {
+        public static class Config {
             public static void initialize(IConfiguration configuration) {
                 ConfigHelper.configuration = configuration;
             }
@@ -38,28 +32,30 @@ namespace LibreHardwareService {
             /// <summary>
             /// Minimum interval (minutes) to log warning when data written is above limit. To avoid logspam.
             /// </summary>
-            public static int MemoryMapLimitLogIntervalMinutes => configuration.GetValue<int>("Settings:memoryMapLimitLogIntervalMinutes");
+            public static int MemoryMapLimitLogIntervalMinutes =>
+                configuration.GetValue<int>("Settings:memoryMapLimitLogIntervalMinutes");
 
             /// <summary>
             /// Time interval in seconds to collect the sensor data and write to memory map.
             /// </summary>
             public static int UpdateIntervalSeconds => configuration.GetValue<int>("Settings:updateIntervalSeconds");
 
-			/// <summary>
-			/// Time interval in minutes to collect the hardware status (like storage smart attributes) and write to memory map.
-			/// </summary>
-			public static int HwStatusUpdateIntervalMinutes => configuration.GetValue<int>("Settings:hwStatusUpdateIntervalMinutes");
+            /// <summary>
+            /// Time interval in minutes to collect the hardware status (like storage smart attributes) and write to memory map.
+            /// </summary>
+            public static int HwStatusUpdateIntervalMinutes =>
+                configuration.GetValue<int>("Settings:hwStatusUpdateIntervalMinutes");
 
-			/// <summary>
-			/// Time window to keep sensor values. The number of values kept in memory will increase when the window is increased.
-			/// Increases CPU usage and memory usage.
-			/// </summary>
-			public static int SensorsTimeWindowSeconds => configuration.GetValue<int>("Settings:sensorsTimeWindowSeconds");
+            /// <summary>
+            /// Time window to keep sensor values. The number of values kept in memory will increase when the window is increased.
+            /// Increases CPU usage and memory usage.
+            /// </summary>
+            public static int SensorsTimeWindowSeconds => configuration.GetValue<int>("Settings:sensorsTimeWindowSeconds");
 
-			/// <summary>
-			/// Limit of the memory map. The default is 1MB.
-			/// </summary>
-			public static int MemoryMapLimitKb => configuration.GetValue<int>("Settings:memoryMapLimitKb");
+            /// <summary>
+            /// Limit of the memory map. The default is 1MB.
+            /// </summary>
+            public static int MemoryMapLimitKb => configuration.GetValue<int>("Settings:memoryMapLimitKb");
 
             public static bool FeatureEnableMemoryMapAllHardwareData =>
                 configuration.GetValue<bool>("Settings:Feature:featureEnableMemoryMapAllHardwareData");

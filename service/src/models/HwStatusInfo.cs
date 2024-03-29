@@ -10,27 +10,36 @@
 
 using System.Runtime.Serialization;
 
+namespace LibreHardwareService {
+    public struct HwStatusInfo {
+        private string identifier;
+        private string name;
+        private string hardwareType;
 
-namespace LibreHardwareService
-{
-	public struct HwStatusInfo
-	{
-		private string identifier;
-		private string name;
-		private string hardwareType;
+        private HwStatusType hwStatusType;
 
-		private HwStatusType hwStatusType;
+        [DataMember(Name = "identifier")]
+        public string Identifier {
+            get => identifier;
+            set => identifier = value ?? "";
+        }
 
-		[DataMember(Name = "identifier")]
-		public string Identifier { get => identifier; set => identifier = value ?? ""; }
+        [DataMember(Name = "hardwareType")]
+        public string HardwareType {
+            get => hardwareType;
+            set => hardwareType = value ?? "";
+        }
 
-		[DataMember(Name = "hardwareType")]
-		public string HardwareType { get => hardwareType; set => hardwareType = value ?? ""; }
+        [DataMember(Name = "name")]
+        public string Name {
+            get => name;
+            set => name = value ?? "";
+        }
 
-		[DataMember(Name = "name")]
-		public string Name { get => name; set => name = value ?? ""; }
-
-		[DataMember(Name = "hwStatusType")]
-		public HwStatusType HwStatusType { get => hwStatusType; set => hwStatusType = value; }
-	}
+        [DataMember(Name = "hwStatusType")]
+        public HwStatusType HwStatusType {
+            get => hwStatusType;
+            set => hwStatusType = value;
+        }
+    }
 }

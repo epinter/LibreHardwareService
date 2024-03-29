@@ -1,7 +1,5 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System.Timers;
 using static LibreHardwareService.ConfigHelper;
 
@@ -61,7 +59,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         return Task.CompletedTask;
     }
     private void onStopped() {
-        Log.Info(hostEnvironment.ApplicationName+" stopped");
+        Log.Info(hostEnvironment.ApplicationName + " stopped");
         if (isDebug) {
             Debug.WriteLine("{0}: Stopping LibreHardwareService", hostEnvironment.ApplicationName);
         }
@@ -75,7 +73,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     private void onStarted() {
         startService();
-        Log.Info(hostEnvironment.ApplicationName+" started");
+        Log.Info(hostEnvironment.ApplicationName + " started");
     }
 
     public void onTimeInterval(object? sender, ElapsedEventArgs args) {

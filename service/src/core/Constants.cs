@@ -8,16 +8,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-namespace LibreHardwareService
-{
-	internal class Constants
-	{
-		public static readonly string FILENAME_SENSORS = @"Global\LibreHardwareService/json/sensors/data";
-		public static readonly string MUTEXNAME_SENSORS = @"Global\LibreHardwareService/json/sensors/data/MUTEX";
-		public static readonly string FILENAME_ALLHARDWARE = @"Global\LibreHardwareService/json/all/data";
-		public static readonly string MUTEXNAME_ALLHARDWARE = @"Global\LibreHardwareService/json/all/data/MUTEX";
-		public static readonly string FILENAME_STATUS = @"Global\LibreHardwareService/json/status/data";
-		public static readonly string MUTEXNAME_STATUS = @"Global\LibreHardwareService/json/status/data/MUTEX";
-
-	}
+namespace LibreHardwareService {
+    internal class Constants {
+        public static readonly string FILENAME_SENSORS = @"Global\LibreHardwareService/json/sensors/data";
+        public static readonly string MUTEXNAME_SENSORS = @"Global\LibreHardwareService/json/sensors/data/MUTEX";
+        public static readonly string FILENAME_ALLHARDWARE = @"Global\LibreHardwareService/json/all/data";
+        public static readonly string MUTEXNAME_ALLHARDWARE = @"Global\LibreHardwareService/json/all/data/MUTEX";
+        public static readonly string FILENAME_STATUS = @"Global\LibreHardwareService/json/status/data";
+        public static readonly string MUTEXNAME_STATUS = @"Global\LibreHardwareService/json/status/data/MUTEX";
+    }
 }

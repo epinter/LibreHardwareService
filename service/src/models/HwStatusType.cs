@@ -8,17 +8,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibreHardwareService
-{
-	public enum HwStatusType
-	{
-		STORAGE_SMART_ATA = 1,
-		STORAGE_SMART_NVME = 2
-	}
+namespace LibreHardwareService {
+    public enum HwStatusType {
+        STORAGE_SMART_ATA = 1,
+        STORAGE_SMART_NVME = 2
+    }
 }

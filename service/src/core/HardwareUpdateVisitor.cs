@@ -9,32 +9,25 @@
  */
 
 using LibreHardwareMonitor.Hardware;
-using System;
 
-namespace LibreHardwareService
-{
-	internal class HardwareUpdateVisitor : IVisitor
-	{
-
-		public void VisitComputer(IComputer computer)
-		{
-			computer.Traverse(this);
-		}
-		public void VisitHardware(IHardware hardware)
-		{
-			try
-			{
-				hardware.Update();
-				foreach (IHardware subHardware in hardware.SubHardware)
-				{
-					subHardware.Accept(this);
-				}
-			} catch (Exception)
-			{
-				//ignored
-			}
-		}
-		public void VisitSensor(ISensor sensor) { }
-		public void VisitParameter(IParameter parameter) { }
-	}
+namespace LibreHardwareService {
+    internal class HardwareUpdateVisitor : IVisitor {
+        public void VisitComputer(IComputer computer) {
+            computer.Traverse(this);
+        }
+        public void VisitHardware(IHardware hardware) {
+            try {
+                hardware.Update();
+                foreach (IHardware subHardware in hardware.SubHardware) {
+                    subHardware.Accept(this);
+                }
+            } catch (Exception) {
+                // ignored
+            }
+        }
+        public void VisitSensor(ISensor sensor) {
+        }
+        public void VisitParameter(IParameter parameter) {
+        }
+    }
 }

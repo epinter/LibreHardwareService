@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreHardwareService.ShowSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreHardwareService", "service\LibreHardwareService.csproj", "{62D4D430-DDD8-4EF7-A7D4-93EFAE9645CE}"
 EndProject
-Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "LibreHardwareService.Installer", "installer\LibreHardwareService.Installer.csproj", "{523E332A-26FE-4A91-B3B2-6F0785DC5C9D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

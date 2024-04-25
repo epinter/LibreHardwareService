@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>LibreHardwareService</Product>
     <AssemblyName>LibreHardwareService</AssemblyName>
-    <VersionPrefix>0.3.0</VersionPrefix>
+    <VersionPrefix>0.3.1</VersionPrefix>
     <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Nullable>enable</Nullable>

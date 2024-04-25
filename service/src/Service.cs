@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Timers;
 using static LibreHardwareService.ConfigHelper;
 
@@ -103,8 +104,11 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         timer.Interval = interval;
         timer.Elapsed += new ElapsedEventHandler(onTimeInterval);
         timer.Enabled = true;
-        Log.info(String.Format("Starting '{0}' with interval set to {1}ms, sensors time-window to {2} minutes",
-                               hostEnvironment.ApplicationName, interval, sensorsManager.getSensorsTimeWindow()));
+        Log.info(String.Format("Starting '{0}' version '{1}' with interval set to {2}ms, sensors time-window to {3} minutes",
+                               hostEnvironment.ApplicationName,
+							   Assembly.GetExecutingAssembly().GetName().Version,
+							   interval,
+							   sensorsManager.getSensorsTimeWindow()));
     }
 
     private int readUpdateIntervalSetting() {

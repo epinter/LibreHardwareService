@@ -165,7 +165,7 @@ namespace LibreHardwareService {
                 }
 
                 Metadata m = new Metadata {
-                    UpdateInterval = Config.UpdateIntervalSeconds,
+                    UpdateInterval = Config.UpdateIntervalMilliseconds,
                     LastUpdate = lastUpdate,
                 };
                 MemoryMappedSensors.instance.writeSensors(indexBytes, dataBytes, m);

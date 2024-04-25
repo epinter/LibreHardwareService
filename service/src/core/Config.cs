@@ -36,9 +36,9 @@ namespace LibreHardwareService {
                 configuration.GetValue<int>("Settings:memoryMapLimitLogIntervalMinutes");
 
             /// <summary>
-            /// Time interval in seconds to collect the sensor data and write to memory map.
+            /// Time interval in milliseconds to collect the sensor data and write to memory map.
             /// </summary>
-            public static int UpdateIntervalSeconds => configuration.GetValue<int>("Settings:updateIntervalSeconds");
+            public static int UpdateIntervalMilliseconds => configuration.GetValue<int>("Settings:updateIntervalMilliseconds");
 
             /// <summary>
             /// Time interval in minutes to collect the hardware status (like storage smart attributes) and write to memory map.

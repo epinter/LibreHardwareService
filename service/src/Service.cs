@@ -108,8 +108,8 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     }
 
     private int readUpdateIntervalSetting() {
-        if (Config.UpdateIntervalSeconds > 0) {
-            return Config.UpdateIntervalSeconds * 1000;
+        if (Config.UpdateIntervalMilliseconds > 250) {
+            return Config.UpdateIntervalMilliseconds;
         }
 
         return interval;

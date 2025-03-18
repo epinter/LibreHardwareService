@@ -41,8 +41,8 @@ namespace LibreHardwareService {
             recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
-        public int getSensorsTimeWindow() {
-            return sensorsTimeWindow.Minutes;
+        public TimeSpan getSensorsTimeWindow() {
+            return sensorsTimeWindow;
         }
 
         public void updateHardwareSensors() {
@@ -303,7 +303,9 @@ namespace LibreHardwareService {
         }
 
         public void close() {
-            computer.Close();
+            try {
+                computer.Close();
+            } catch (Exception) { }
         }
     }
 }

@@ -11,6 +11,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     private readonly BackgroundWorker worker;
     private readonly SensorsManager sensorsManager;
     private readonly System.Timers.Timer timer;
+    private bool stopping = false;
     private int interval = 1000;
 
     private bool debug = false;
@@ -26,9 +27,6 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     public Service(IHostEnvironment hostEnvironment, IHostApplicationLifetime applicationLifetime) {
         this.hostEnvironment = hostEnvironment;
-        applicationLifetime.ApplicationStarted.Register(onStarted);
-        // applicationLifetime.ApplicationStopping.Register(OnStopping);
-        applicationLifetime.ApplicationStopped.Register(onStopped);
 
         sensorsManager = new SensorsManager();
         worker = new BackgroundWorker();
@@ -37,10 +35,12 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     }
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken) {
+        onStarted();
         return Task.CompletedTask;
     }
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken) {
+        onStopping();
         return Task.CompletedTask;
     }
 
@@ -59,17 +59,20 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     Task IHostedLifecycleService.StoppingAsync(CancellationToken cancellationToken) {
         return Task.CompletedTask;
     }
-    private void onStopped() {
-        Log.info(hostEnvironment.ApplicationName + " stopped");
+
+    private void onStopping() {
         if (isDebug) {
             Debug.WriteLine("{0}: Stopping LibreHardwareService", hostEnvironment.ApplicationName);
         }
+        stopping = true;
 
-        sensorsManager.close();
-        timer.Stop();
-        timer.Dispose();
-        worker?.CancelAsync();
-        worker?.Dispose();
+        try {
+            timer.Stop();
+            timer.Dispose();
+            worker?.CancelAsync();
+            worker?.Dispose();
+            sensorsManager.close();
+        } catch (Exception) {}
     }
 
     private void onStarted() {
@@ -80,14 +83,16 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     public void onTimeInterval(object? sender, ElapsedEventArgs args) {
         Debug.WriteLine("{0}: OnTimeInterval", hostEnvironment.ApplicationName);
 
-        if (!worker.IsBusy) {
+        if (!worker.IsBusy && !stopping) {
             worker.RunWorkerAsync();
         }
     }
 
     private void updateSensors(object? sender, DoWorkEventArgs e) {
         Debug.WriteLine("{0}: UpdateSensors", hostEnvironment.ApplicationName);
-
+        if(stopping) {
+            return;
+        }
         sensorsManager.updateHardwareSensors();
     }
 
@@ -104,11 +109,11 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         timer.Interval = interval;
         timer.Elapsed += new ElapsedEventHandler(onTimeInterval);
         timer.Enabled = true;
-        Log.info(String.Format("Starting '{0}' version '{1}' with interval set to {2}ms, sensors time-window to {3} minutes",
-                               hostEnvironment.ApplicationName,
-							   Assembly.GetExecutingAssembly().GetName().Version,
-							   interval,
-							   sensorsManager.getSensorsTimeWindow()));
+        Log.info(string.Format("Starting '{0}' version '{1}' with interval set to {2}ms, sensors time-window to {3} seconds",
+                                hostEnvironment.ApplicationName,
+                                Assembly.GetExecutingAssembly().GetName().Version,
+                                interval,
+                                sensorsManager.getSensorsTimeWindow().Seconds));
     }
 
     private int readUpdateIntervalSetting() {

@@ -25,6 +25,11 @@ namespace LibreHardwareService {
             EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Information);
         }
 
+        public static void error(Exception? exception, string message, params object[] args) {
+            logger.LogError(exception, String.Format(message, args));
+            EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Error);
+        }
+
         public static void error(string message, params object[] args) {
             logger.LogError(String.Format(message, args));
             EventLog.WriteEntry(eventLogSource, string.Format(message, args), EventLogEntryType.Error);

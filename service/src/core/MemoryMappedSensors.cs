@@ -17,13 +17,11 @@ using static LibreHardwareService.ConfigHelper;
 namespace LibreHardwareService {
 #pragma warning disable CA1416  // Validate platform compatibility
     internal class MemoryMappedSensors {
-#pragma warning disable CS8618  // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring
-                                // as nullable.
+#pragma warning disable CS8618  // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private static MemoryMappedFile mmfSensors;
         private static MemoryMappedFile mmfAllHardware;
         private static MemoryMappedFile mmfStatus;
-#pragma warning restore CS8618  // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring
-                                // as nullable.
+#pragma warning restore CS8618
 
         private readonly int MMAP_SIZE = Config.MemoryMapLimitKb;
         private readonly MemoryMappedViewAccessor acessorSensors;
@@ -45,11 +43,9 @@ namespace LibreHardwareService {
             internal static readonly MemoryMappedSensors instance = new MemoryMappedSensors();
         }
 
-#pragma warning disable CS8618  // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring
-                                // as nullable.
+#pragma warning disable CS8618
         private MemoryMappedSensors()
-#pragma warning restore CS8618  // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring
-                                // as nullable.
+#pragma warning restore CS8618
         {
             try {
                 var sidEveryonee = new SecurityIdentifier(WellKnownSidType.WorldSid, null);

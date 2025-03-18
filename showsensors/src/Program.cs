@@ -36,9 +36,15 @@ namespace ShowSensors {
     internal class Program {
         static void Main(string[] args) {
             Computer computer = new Computer {
-                IsCpuEnabled = true,        IsGpuEnabled = true,     IsBatteryEnabled = true,
-                IsPsuEnabled = true,        IsMemoryEnabled = true,  IsMotherboardEnabled = true,
-                IsControllerEnabled = true, IsNetworkEnabled = true, IsStorageEnabled = true,
+                IsCpuEnabled = true,
+                IsGpuEnabled = true,
+                IsBatteryEnabled = true,
+                IsPsuEnabled = true,
+                IsMemoryEnabled = true,
+                IsMotherboardEnabled = true,
+                IsControllerEnabled = true,
+                IsNetworkEnabled = true,
+                IsStorageEnabled = true,
             };
             HardwareUpdateVisitor updateVisitor = new HardwareUpdateVisitor();
             computer.Open();
@@ -94,28 +100,33 @@ namespace ShowSensors {
                     } else if (h is NVMeGeneric) {
                         NVMeGeneric n = (NVMeGeneric)h;
                         NVMeHealthInfo nh = n.Smart.GetHealthInfo();
-                        HwStatusInfo hwStatus = new HwStatusInfo { Identifier = h.Identifier.ToString(), Name = h.Name,
-                                                                   HardwareType = h.HardwareType.ToString(),
-                                                                   HwStatusType = HwStatusType.STORAGE_SMART_NVME };
+                        HwStatusInfo hwStatus = new HwStatusInfo {
+                            Identifier = h.Identifier.ToString(),
+                            Name = h.Name,
+                            HardwareType = h.HardwareType.ToString(),
+                            HwStatusType = HwStatusType.STORAGE_SMART_NVME
+                        };
                         DataNvmeSmart nvmeSmart =
-                            new DataNvmeSmart { AvailableSpare = nh.AvailableSpare,
-                                                AvailableSpareThreshold = nh.AvailableSpareThreshold,
-                                                ControllerBusyTime = nh.ControllerBusyTime,
-                                                CriticalCompositeTemperatureTime = nh.CriticalCompositeTemperatureTime,
-                                                CriticalWarning = (byte)nh.CriticalWarning,
-                                                DataUnitRead = nh.DataUnitRead,
-                                                DataUnitWritten = nh.DataUnitWritten,
-                                                ErrorInfoLogEntryCount = nh.ErrorInfoLogEntryCount,
-                                                HostReadCommands = nh.HostReadCommands,
-                                                HostWriteCommands = nh.HostWriteCommands,
-                                                MediaErrors = nh.MediaErrors,
-                                                PercentageUsed = nh.PercentageUsed,
-                                                PowerCycle = nh.PowerCycle,
-                                                PowerOnHours = nh.PowerOnHours,
-                                                Temperature = nh.Temperature,
-                                                TemperatureSensors = nh.TemperatureSensors,
-                                                UnsafeShutdowns = nh.UnsafeShutdowns,
-                                                WarningCompositeTemperatureTime = nh.WarningCompositeTemperatureTime };
+                            new DataNvmeSmart {
+                                AvailableSpare = nh.AvailableSpare,
+                                AvailableSpareThreshold = nh.AvailableSpareThreshold,
+                                ControllerBusyTime = nh.ControllerBusyTime,
+                                CriticalCompositeTemperatureTime = nh.CriticalCompositeTemperatureTime,
+                                CriticalWarning = (byte)nh.CriticalWarning,
+                                DataUnitRead = nh.DataUnitRead,
+                                DataUnitWritten = nh.DataUnitWritten,
+                                ErrorInfoLogEntryCount = nh.ErrorInfoLogEntryCount,
+                                HostReadCommands = nh.HostReadCommands,
+                                HostWriteCommands = nh.HostWriteCommands,
+                                MediaErrors = nh.MediaErrors,
+                                PercentageUsed = nh.PercentageUsed,
+                                PowerCycle = nh.PowerCycle,
+                                PowerOnHours = nh.PowerOnHours,
+                                Temperature = nh.Temperature,
+                                TemperatureSensors = nh.TemperatureSensors,
+                                UnsafeShutdowns = nh.UnsafeShutdowns,
+                                WarningCompositeTemperatureTime = nh.WarningCompositeTemperatureTime
+                            };
                         Console.WriteLine("\tsmart-attribute: {0}", nvmeSmart);
                     }
                 }
@@ -127,7 +138,8 @@ namespace ShowSensors {
                         Console.WriteLine("\t\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name, s.Value,
                                           s.SensorType, s.Identifier);
                     }
-                };
+                }
+                ;
                 foreach (ISensor s in h.Sensors) {
                     Console.WriteLine("\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name, s.Value,
                                       s.SensorType, s.Identifier);

@@ -18,8 +18,8 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     public bool isDebug {
         get { return debug; }
-    internal
-        set {
+        internal
+            set {
             sensorsManager.isDebug = true;
             debug = true;
         }
@@ -72,7 +72,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
             worker?.CancelAsync();
             worker?.Dispose();
             sensorsManager.close();
-        } catch (Exception) {}
+        } catch (Exception) { }
     }
 
     private void onStarted() {
@@ -90,7 +90,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     private void updateSensors(object? sender, DoWorkEventArgs e) {
         Debug.WriteLine("{0}: UpdateSensors", hostEnvironment.ApplicationName);
-        if(stopping) {
+        if (stopping) {
             return;
         }
         sensorsManager.updateHardwareSensors();

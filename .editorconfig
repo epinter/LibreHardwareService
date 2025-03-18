@@ -2,6 +2,10 @@ root = true
 
 [*.cs]
 indent_style = space
+indent_size = 4
+indent_style = space
+tab_width = 4
+dotnet_style_namespace_match_folder = false
 
 # CA1416: Validate platform compatibility
 dotnet_diagnostic.CA1416.severity = none
@@ -9,3 +13,40 @@ dotnet_diagnostic.CA1416.severity = none
 
 # CA1416: Validate platform compatibility
 dotnet_diagnostic.CA1416.severity = none
+
+###############################
+# C# Formatting Rules         #
+###############################
+# New line preferences
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+
+
+#style
+dotnet_naming_style.mystylepc.required_prefix = 
+dotnet_naming_style.mystylepc.required_suffix = 
+dotnet_naming_style.mystylepc.word_separator = 
+dotnet_naming_style.mystylepc.capitalization = pascal_case
+
+dotnet_naming_style.mystylecc.required_prefix = 
+dotnet_naming_style.mystylecc.required_suffix = 
+dotnet_naming_style.mystylecc.word_separator = 
+dotnet_naming_style.mystylecc.capitalization = camel_case
+
+#rules
+dotnet_naming_rule.mystylepc.severity = suggestion
+dotnet_naming_rule.mystylepc.symbols = symbols_pascalcase
+dotnet_naming_rule.mystylepc.style = mystylepc
+
+dotnet_naming_rule.mystylecc.severity = suggestion
+dotnet_naming_rule.mystylecc.symbols = symbols_camelcase
+dotnet_naming_rule.mystylecc.style = mystylecc
+
+dotnet_naming_symbols.symbols_pascalcase.applicable_kinds = enum, interface, struct, class, namespace, property
+dotnet_naming_symbols.symbols_camelcase.applicable_kinds = local_function, local, type_parameter, parameter, delegate, event, field, method
+

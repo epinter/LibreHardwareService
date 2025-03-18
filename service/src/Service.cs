@@ -16,11 +16,11 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
 
     private bool debug = false;
 
-    public bool isDebug {
+    public bool IsDebug {
         get { return debug; }
         internal
             set {
-            sensorsManager.isDebug = true;
+            sensorsManager.IsDebug = true;
             debug = true;
         }
     }
@@ -61,7 +61,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     }
 
     private void onStopping() {
-        if (isDebug) {
+        if (IsDebug) {
             Debug.WriteLine("{0}: Stopping LibreHardwareService", hostEnvironment.ApplicationName);
         }
         stopping = true;
@@ -97,7 +97,7 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
     }
 
     public void startService() {
-        if (isDebug) {
+        if (IsDebug) {
             Debug.WriteLine("{0}: DEBUG ENABLED, Interval set to {1}ms", hostEnvironment.ApplicationName, interval);
         } else {
             interval = readUpdateIntervalSetting();

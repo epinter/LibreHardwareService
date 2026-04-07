@@ -9,11 +9,11 @@
  */
 
 using LibreHardwareMonitor.Hardware;
+using LibreHardwareMonitor.Hardware.Storage;
 using System.Diagnostics;
 using System.Text;
 using MessagePack;
 using Microsoft.IO;
-using LibreHardwareMonitor.Hardware.Storage;
 using static LibreHardwareService.ConfigHelper;
 
 namespace LibreHardwareService {
@@ -223,8 +223,10 @@ namespace LibreHardwareService {
             using (MemoryStream stream = recyclableMemoryStreamManager.GetStream()) {
                 using (BinaryWriter writer = new BinaryWriter(stream)) {
                     foreach (IHardware h in computer.Hardware) {
-                        if (h.HardwareType.Equals(HardwareType.Storage)) {
-                            if (h is AtaStorage) {
+                        if (h.HardwareType.Equals(HardwareType.Storage) && h is StorageDevice storageDevice) {
+                            bool isNvme = storageDevice.Storage.IsNVMe;
+
+                            if (!isNvme) {
                                 List<DataSmartAttribute> attrList = new List<DataSmartAttribute>();
                                 HwStatusInfo hwStatus = new HwStatusInfo {
                                     Identifier = h.Identifier.ToString(),
@@ -232,38 +234,21 @@ namespace LibreHardwareService {
                                     HardwareType = h.HardwareType.ToString(),
                                     HwStatusType = HwStatusType.STORAGE_SMART_ATA,
                                 };
-                                AtaStorage storage = (AtaStorage)h;
-                                LibreHardwareMonitor.Interop.Kernel32.SMART_ATTRIBUTE[] attrs = storage.Smart.ReadSmartData();
-                                LibreHardwareMonitor.Interop.Kernel32.SMART_THRESHOLD[] thresholds =
-                                    storage.Smart.ReadSmartThresholds();
 
-                                foreach (LibreHardwareMonitor.Interop.Kernel32.SMART_ATTRIBUTE a in attrs) {
-                                    if (a.Id == 0x00) {
-                                        break;
-                                    }
+                                foreach (var sa in storageDevice.Attributes) {
+                                    if (sa.Id == 0x00) continue;
+                                    var raw = sa.Attribute?.Attribute;
 
-#pragma warning disable CS8600  // Converting null literal or possible null value to non-nullable type.
-                                    SmartAttribute attr = storage.SmartAttributes.FirstOrDefault(s => s.Id == a.Id);
-#pragma warning restore CS8600  // Converting null literal or possible null value to non-nullable type.
-                                    string attrName = "Unknown";
-                                    if (attr != null) {
-                                        attrName = attr.Name;
-                                    }
-
-                                    byte threshold = 0;
-                                    foreach (LibreHardwareMonitor.Interop.Kernel32.SMART_THRESHOLD t in thresholds) {
-                                        if (t.Id == a.Id) {
-                                            threshold = t.Threshold;
-                                        }
-                                    }
                                     attrList.Add(new DataSmartAttribute {
-                                        Id = a.Id,
-                                        Name = attrName,
-                                        Threshold = threshold,
-                                        Flags = a.Flags,
-                                        RawValue = new List<Byte>(a.RawValue),
-                                        CurrentValue = a.CurrentValue,
-                                        WorstValue = a.WorstValue,
+                                        Id = sa.Id,
+                                        Name = sa.Name ?? "Unknown",
+                                        Threshold = raw?.Threshold ?? sa.Threshold,
+                                        Flags = raw?.StatusFlags ?? 0,
+                                        RawValue = raw.HasValue && raw.Value.RawValue != null
+                                            ? new List<Byte>(raw.Value.RawValue.Take(6))
+                                            : new List<Byte>(BitConverter.GetBytes((ulong)sa.Value).Take(6)),
+                                        CurrentValue = raw?.CurrentValue ?? 0,
+                                        WorstValue = raw?.WorstValue ?? 0,
                                     });
                                 }
 
@@ -279,36 +264,73 @@ namespace LibreHardwareService {
                                 if (IsDebug) {
                                     Console.WriteLine(Utf8Json.JsonSerializer.PrettyPrint(hwStatusData));
                                 }
-                            } else if (h is NVMeGeneric) {
-                                NVMeGeneric n = (NVMeGeneric)h;
-                                NVMeHealthInfo nh = n.Smart.GetHealthInfo();
+                            } else {
+                                var smart = storageDevice.Storage?.Smart;
+                                if (smart == null) continue;
                                 HwStatusInfo hwStatus = new HwStatusInfo {
                                     Identifier = h.Identifier.ToString(),
                                     Name = h.Name,
                                     HardwareType = h.HardwareType.ToString(),
                                     HwStatusType = HwStatusType.STORAGE_SMART_NVME
                                 };
-                                DataNvmeSmart nvmeSmart =
-                                    new DataNvmeSmart {
-                                        AvailableSpare = nh.AvailableSpare,
-                                        AvailableSpareThreshold = nh.AvailableSpareThreshold,
-                                        ControllerBusyTime = nh.ControllerBusyTime,
-                                        CriticalCompositeTemperatureTime = nh.CriticalCompositeTemperatureTime,
-                                        CriticalWarning = (byte)nh.CriticalWarning,
-                                        DataUnitRead = nh.DataUnitRead,
-                                        DataUnitWritten = nh.DataUnitWritten,
-                                        ErrorInfoLogEntryCount = nh.ErrorInfoLogEntryCount,
-                                        HostReadCommands = nh.HostReadCommands,
-                                        HostWriteCommands = nh.HostWriteCommands,
-                                        MediaErrors = nh.MediaErrors,
-                                        PercentageUsed = nh.PercentageUsed,
-                                        PowerCycle = nh.PowerCycle,
-                                        PowerOnHours = nh.PowerOnHours,
-                                        Temperature = nh.Temperature,
-                                        TemperatureSensors = nh.TemperatureSensors,
-                                        UnsafeShutdowns = nh.UnsafeShutdowns,
-                                        WarningCompositeTemperatureTime = nh.WarningCompositeTemperatureTime
-                                    };
+
+                                short temp = (short)(smart.Temperature ?? 0);
+
+                                // Map NVMe attributes from unified SMART list
+                                byte availableSpare = 0, availableSpareThreshold = 0, percentageUsed = 0, criticalWarning = 0;
+                                ulong hostReadCommands = 0, hostWriteCommands = 0;
+                                ulong unsafeShutdowns = 0, mediaErrors = 0, errorInfoLogEntryCount = 0;
+                                ulong controllerBusyTime = 0;
+                                uint warningTempTime = (uint)(smart.TemperatureWarning ?? 0);
+                                uint criticalTempTime = (uint)(smart.TemperatureCritical ?? 0);
+
+                                foreach (var attr in storageDevice.Attributes) {
+                                    var name = attr.Name?.ToLowerInvariant() ?? "";
+                                    var raw = (ulong)attr.Value;
+                                    if (name.Contains("available spare") && !name.Contains("threshold"))
+                                        availableSpare = (byte)Math.Min(raw, 255);
+                                    else if (name.Contains("available spare") && name.Contains("threshold"))
+                                        availableSpareThreshold = (byte)Math.Min(raw, 255);
+                                    else if (name.Contains("percentage used"))
+                                        percentageUsed = (byte)Math.Min(raw, 255);
+                                    else if (name.Contains("critical warning"))
+                                        criticalWarning = (byte)raw;
+                                    else if (name.Contains("host read"))
+                                        hostReadCommands = raw;
+                                    else if (name.Contains("host write"))
+                                        hostWriteCommands = raw;
+                                    else if (name.Contains("unsafe shutdown"))
+                                        unsafeShutdowns = raw;
+                                    else if (name.Contains("media") && name.Contains("error"))
+                                        mediaErrors = raw;
+                                    else if (name.Contains("error") && name.Contains("log"))
+                                        errorInfoLogEntryCount = raw;
+                                    else if (name.Contains("controller busy"))
+                                        controllerBusyTime = raw;
+                                }
+
+                                DataNvmeSmart nvmeSmart = new DataNvmeSmart {
+                                    AvailableSpare = availableSpare,
+                                    AvailableSpareThreshold = availableSpareThreshold,
+                                    ControllerBusyTime = controllerBusyTime,
+                                    CriticalCompositeTemperatureTime = criticalTempTime,
+                                    CriticalWarning = criticalWarning,
+                                    DataUnitRead = smart.HostReads ?? 0,
+                                    DataUnitWritten = smart.HostWrites ?? 0,
+                                    ErrorInfoLogEntryCount = errorInfoLogEntryCount,
+                                    HostReadCommands = hostReadCommands,
+                                    HostWriteCommands = hostWriteCommands,
+                                    MediaErrors = mediaErrors,
+                                    PercentageUsed = percentageUsed,
+                                    PowerCycle = smart.PowerOnCount,
+                                    PowerOnHours = smart.DetectedPowerOnHours,
+                                    Temperature = temp,
+                                    TemperatureSensors = temp != 0
+                                        ? new short[] { temp }
+                                        : Array.Empty<short>(),
+                                    UnsafeShutdowns = unsafeShutdowns,
+                                    WarningCompositeTemperatureTime = warningTempTime
+                                };
                                 byte[] hwStatusInfo = Utf8Json.JsonSerializer.Serialize(hwStatus);
                                 byte[] hwStatusData = Utf8Json.JsonSerializer.Serialize(nvmeSmart);
                                 writer.Write(8 + hwStatusInfo.Length + 4 + hwStatusData.Length + 1);

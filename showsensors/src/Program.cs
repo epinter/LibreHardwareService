@@ -53,81 +53,18 @@ namespace ShowSensors {
             foreach (IHardware h in computer.Hardware) {
                 Console.WriteLine("Hardware: name='{0}'; type='{1}'; identifier='{2}';", h.Name, h.HardwareType, h.Identifier);
 
-                if (h.HardwareType.Equals(HardwareType.Storage)) {
-                    if (h is AtaStorage) {
-                        List<DataSmartAttribute> attrList = new List<DataSmartAttribute>();
-                        HwStatusInfo hwStatus = new HwStatusInfo {
-                            Identifier = h.Identifier.ToString(),
-                            Name = h.Name,
-                            HardwareType = h.HardwareType.ToString(),
-                            HwStatusType = HwStatusType.STORAGE_SMART_ATA,
-                        };
-                        AtaStorage storage = (AtaStorage)h;
-                        LibreHardwareMonitor.Interop.Kernel32.SMART_ATTRIBUTE[] attrs = storage.Smart.ReadSmartData();
-                        LibreHardwareMonitor.Interop.Kernel32.SMART_THRESHOLD[] thresholds = storage.Smart.ReadSmartThresholds();
-
-                        foreach (LibreHardwareMonitor.Interop.Kernel32.SMART_ATTRIBUTE a in attrs) {
-                            if (a.Id == 0x00) {
-                                break;
-                            }
-
-                            SmartAttribute? attr = storage.SmartAttributes.FirstOrDefault(s => s.Id == a.Id);
-                            string attrName = "Unknown";
-                            if (attr != null) {
-                                attrName = attr.Name;
-                            }
-
-                            byte threshold = 0;
-                            foreach (LibreHardwareMonitor.Interop.Kernel32.SMART_THRESHOLD t in thresholds) {
-                                if (t.Id == a.Id) {
-                                    threshold = t.Threshold;
-                                }
-                            }
-                            DataSmartAttribute d = new DataSmartAttribute {
-                                Id = a.Id,
-                                Name = attrName,
-                                Threshold = threshold,
-                                Flags = a.Flags,
-                                RawValue = new List<Byte>(a.RawValue),
-                                CurrentValue = a.CurrentValue,
-                                WorstValue = a.WorstValue,
-                            };
-                            Console.WriteLine(
-                                "\t\tsmart-attribute: [[name:'{0}'; id:'{1}'; rawValue:'{2}';\n\t\t\tcurrentValue:'{3}'; threshold:'{4}'; worst:'{5}'; prefail:'{6}'; advisory:'{7}';]]",
-                                d.Name, "0x" + Convert.ToString(d.Id, 16), BitConverter.ToString(a.RawValue), d.CurrentValue,
-                                d.Threshold, d.WorstValue, d.IsPreFail, d.IsAdvisory);
-                        }
-                    } else if (h is NVMeGeneric) {
-                        NVMeGeneric n = (NVMeGeneric)h;
-                        NVMeHealthInfo nh = n.Smart.GetHealthInfo();
-                        HwStatusInfo hwStatus = new HwStatusInfo {
-                            Identifier = h.Identifier.ToString(),
-                            Name = h.Name,
-                            HardwareType = h.HardwareType.ToString(),
-                            HwStatusType = HwStatusType.STORAGE_SMART_NVME
-                        };
-                        DataNvmeSmart nvmeSmart =
-                            new DataNvmeSmart {
-                                AvailableSpare = nh.AvailableSpare,
-                                AvailableSpareThreshold = nh.AvailableSpareThreshold,
-                                ControllerBusyTime = nh.ControllerBusyTime,
-                                CriticalCompositeTemperatureTime = nh.CriticalCompositeTemperatureTime,
-                                CriticalWarning = (byte)nh.CriticalWarning,
-                                DataUnitRead = nh.DataUnitRead,
-                                DataUnitWritten = nh.DataUnitWritten,
-                                ErrorInfoLogEntryCount = nh.ErrorInfoLogEntryCount,
-                                HostReadCommands = nh.HostReadCommands,
-                                HostWriteCommands = nh.HostWriteCommands,
-                                MediaErrors = nh.MediaErrors,
-                                PercentageUsed = nh.PercentageUsed,
-                                PowerCycle = nh.PowerCycle,
-                                PowerOnHours = nh.PowerOnHours,
-                                Temperature = nh.Temperature,
-                                TemperatureSensors = nh.TemperatureSensors,
-                                UnsafeShutdowns = nh.UnsafeShutdowns,
-                                WarningCompositeTemperatureTime = nh.WarningCompositeTemperatureTime
-                            };
-                        Console.WriteLine("\tsmart-attribute: {0}", nvmeSmart);
+                if (h.HardwareType.Equals(HardwareType.Storage) && h is StorageDevice storageDevice) {
+                    foreach (var sa in storageDevice.Attributes) {
+                        if (sa.Id == 0x00) continue;
+                        var raw = sa.Attribute?.Attribute;
+                        Console.WriteLine(
+                            "\t\tsmart-attribute: [[name:'{0}'; id:'0x{1:x2}'; rawValue:'{2}';\n\t\t\tcurrentValue:'{3}'; threshold:'{4}'; worst:'{5}';]]",
+                            sa.Name ?? "Unknown",
+                            sa.Id,
+                            raw.HasValue && raw.Value.RawValue != null ? BitConverter.ToString(raw.Value.RawValue) : sa.Value.ToString(),
+                            raw?.CurrentValue ?? 0,
+                            raw?.Threshold ?? sa.Threshold,
+                            raw?.WorstValue ?? 0);
                     }
                 }
 

@@ -117,9 +117,9 @@ namespace LibreHardwareService {
                                 HardwareType = subHardware.HardwareType.ToString(),
                                 Identifier = s.Identifier.ToString(),
                                 SensorType = s.SensorType.ToString(),
-                                Value = (float)s.Value,
-                                Max = (float)s.Max,
-                                Min = (float)s.Min,
+                                Value = (s.Value != null && !float.IsNaN((float)s.Value)) ? (float)s.Value : 0.0f,
+                                Max = (s.Max != null && !float.IsNaN((float)s.Max)) ? (float)s.Max : 0.0f,
+                                Min = (s.Min != null && !float.IsNaN((float)s.Min))? (float)s.Min : 0.0f,
                                 ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
                                 Values = fromHardwareSensorValue(s.Values)
                             };
@@ -152,9 +152,9 @@ namespace LibreHardwareService {
                                 HardwareType = hardware.HardwareType.ToString(),
                                 Identifier = s.Identifier.ToString(),
                                 SensorType = s.SensorType.ToString(),
-                                Value = s.Value != null ? (float)s.Value : 0.0f,
-                                Max = s.Max != null ? (float)s.Max : 0.0f,
-                                Min = s.Min != null ? (float)s.Min : 0.0f,
+                                Value = (s.Value != null && !float.IsNaN((float)s.Value)) ? (float)s.Value : 0.0f,
+                                Max = (s.Max != null && !float.IsNaN((float)s.Max)) ? (float)s.Max : 0.0f,
+                                Min = (s.Min != null && !float.IsNaN((float)s.Min))? (float)s.Min : 0.0f,
                                 ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
                                 Values = fromHardwareSensorValue(s.Values)
                             };

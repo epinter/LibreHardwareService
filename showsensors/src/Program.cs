@@ -51,7 +51,7 @@ namespace ShowSensors {
             computer.Accept(updateVisitor);
 
             foreach (IHardware h in computer.Hardware) {
-                Console.WriteLine("Hardware: name='{0}'; type='{1}'; identifier='{2}';", h.Name, h.HardwareType, h.Identifier);
+                Console.WriteLine("Hardware: name='{0}'; type='{1}'; identifier='{2}';", h.Name.Trim(), h.HardwareType, h.Identifier);
 
                 if (h.HardwareType.Equals(HardwareType.Storage) && h is StorageDevice storageDevice) {
                     foreach (var sa in storageDevice.Attributes) {
@@ -69,16 +69,16 @@ namespace ShowSensors {
                 }
 
                 foreach (IHardware sh in h.SubHardware) {
-                    Console.WriteLine("\tSubHardware: name='{0}'; type='{1}'; identifier='{2}';", sh.Name, sh.HardwareType,
+                    Console.WriteLine("\tSubHardware: name='{0}'; type='{1}'; identifier='{2}';", sh.Name.Trim(), sh.HardwareType,
                                       sh.Identifier);
                     foreach (ISensor s in sh.Sensors) {
-                        Console.WriteLine("\t\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name, s.Value,
+                        Console.WriteLine("\t\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name.Trim(), s.Value,
                                           s.SensorType, s.Identifier);
                     }
                 }
                 ;
                 foreach (ISensor s in h.Sensors) {
-                    Console.WriteLine("\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name, s.Value,
+                    Console.WriteLine("\tSensor: name='{0}'; value='{1}'; type='{2}'; identifier='{3}';", s.Name.Trim(), s.Value,
                                       s.SensorType, s.Identifier);
                 }
             }

@@ -68,9 +68,12 @@ namespace LibreHardwareService {
             List<DataHardware> root = new List<DataHardware>();
             using (MemoryStream stream = recyclableMemoryStreamManager.GetStream()) {
                 foreach (IHardware h in computer.Hardware) {
+                    if(h == null) {
+                        continue;
+                    }
 #pragma warning disable CS8601  // Possible null reference assignment.
                     DataHardware hardware = new DataHardware {
-                        Name = h.Name,
+                        Name = h.Name.Trim(),
                         HardwareType = h.HardwareType.ToString(),
                         Identifier = h.Identifier.ToString(),
                         Parent = h.Parent?.Identifier.ToString(),
@@ -83,8 +86,11 @@ namespace LibreHardwareService {
                         hardwareData = Utf8Json.JsonSerializer.Serialize(hardware);
                     }
                     foreach (IHardware sh in h.SubHardware) {
+                        if(sh == null) {
+                            continue;
+                        }
                         DataHardware subHardware = new DataHardware {
-                            Name = sh.Name,
+                            Name = sh.Name.Trim(),
                             HardwareType = sh.HardwareType.ToString(),
                             Identifier = sh.Identifier.ToString(),
                             Parent = sh.Parent?.Identifier.ToString(),
@@ -100,9 +106,12 @@ namespace LibreHardwareService {
                             subHardwareData = Utf8Json.JsonSerializer.Serialize(subHardware);
                         }
                         foreach (ISensor s in sh.Sensors) {
+                            if(s == null) {
+                                continue;
+                            }
 #pragma warning disable CS8629  // Nullable value type may be null.
                             DataSensor sensor = new DataSensor {
-                                Name = s.Name,
+                                Name = s.Name.Trim(),
                                 HardwareId = subHardware.Identifier.ToString(),
                                 HardwareName = subHardware.Name,
                                 HardwareType = subHardware.HardwareType.ToString(),
@@ -125,9 +134,9 @@ namespace LibreHardwareService {
                                 Identifier = s.Identifier.ToString(),
                                 Size = sensorData.Length,
                                 Offset = offset,
-                                SensorName = s.Name,
+                                SensorName = s.Name.Trim(),
                                 SensorType = s.SensorType.ToString(),
-                                HardwareName = s.Hardware.Name
+                                HardwareName = s.Hardware.Name.Trim()
                             });
                             stream.Write(sensorData, 0, sensorData.Length);
                             stream.WriteByte(0);
@@ -149,6 +158,7 @@ namespace LibreHardwareService {
                                 ValuesTimeWindow = s.ValuesTimeWindow.TotalSeconds,
                                 Values = fromHardwareSensorValue(s.Values)
                             };
+
                             byte[] sensorData = new byte[0];
 
                             if (Config.FeatureEnableMemoryMapAllHardwareData) {
@@ -160,9 +170,9 @@ namespace LibreHardwareService {
                                 Identifier = s.Identifier.ToString(),
                                 Size = sensorData.Length,
                                 Offset = offset,
-                                SensorName = s.Name,
+                                SensorName = s.Name.Trim(),
                                 SensorType = s.SensorType.ToString(),
-                                HardwareName = s.Hardware.Name
+                                HardwareName = s.Hardware.Name.Trim()
                             });
                             stream.Write(sensorData, 0, sensorData.Length);
                             stream.WriteByte(0);
@@ -223,6 +233,9 @@ namespace LibreHardwareService {
             using (MemoryStream stream = recyclableMemoryStreamManager.GetStream()) {
                 using (BinaryWriter writer = new BinaryWriter(stream)) {
                     foreach (IHardware h in computer.Hardware) {
+                        if(h == null) {
+                            continue;
+                        }
                         if (h.HardwareType.Equals(HardwareType.Storage) && h is StorageDevice storageDevice) {
                             bool isNvme = storageDevice.Storage.IsNVMe;
 
@@ -230,7 +243,7 @@ namespace LibreHardwareService {
                                 List<DataSmartAttribute> attrList = new List<DataSmartAttribute>();
                                 HwStatusInfo hwStatus = new HwStatusInfo {
                                     Identifier = h.Identifier.ToString(),
-                                    Name = h.Name,
+                                    Name = h.Name.Trim(),
                                     HardwareType = h.HardwareType.ToString(),
                                     HwStatusType = HwStatusType.STORAGE_SMART_ATA,
                                 };
@@ -269,7 +282,7 @@ namespace LibreHardwareService {
                                 if (smart == null) continue;
                                 HwStatusInfo hwStatus = new HwStatusInfo {
                                     Identifier = h.Identifier.ToString(),
-                                    Name = h.Name,
+                                    Name = h.Name.Trim(),
                                     HardwareType = h.HardwareType.ToString(),
                                     HwStatusType = HwStatusType.STORAGE_SMART_NVME
                                 };

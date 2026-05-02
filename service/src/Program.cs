@@ -7,4 +7,14 @@ ConfigHelper.Config.initialize(builder.Configuration);
 builder.Services.AddHostedService<Service>();
 
 var host = builder.Build();
-host.Run();
+
+if (args.Length == 1 && args[0] == "console") {
+    Console.WriteLine("Starting");
+    await host.RunAsync();
+} else {
+    try {
+        host.Run();
+    } catch (Exception e) {
+        Log.error("Error", e);
+    }
+}

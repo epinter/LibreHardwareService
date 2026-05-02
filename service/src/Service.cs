@@ -32,6 +32,11 @@ public sealed class Service : IHostedService, IHostedLifecycleService {
         worker = new BackgroundWorker();
         timer = new System.Timers.Timer();
         worker.WorkerSupportsCancellation = true;
+        AppDomain.CurrentDomain.UnhandledException += logUnhandledException;
+    }
+
+    private void logUnhandledException(object sender, UnhandledExceptionEventArgs e) {
+        Log.error("Unhandled exception", e);
     }
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken) {

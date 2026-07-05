@@ -107,7 +107,6 @@ namespace LibreHardwareService {
                 Debug.WriteLine(errorMessage);
                 Log.error(ex.Message);
                 System.Environment.Exit(2);
-                throw;
             }
         }
 

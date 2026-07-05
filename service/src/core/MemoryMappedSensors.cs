@@ -50,14 +50,23 @@ namespace LibreHardwareService {
             try {
                 var sidEveryonee = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
                 NTAccount everyone = (NTAccount)sidEveryonee.Translate(typeof(NTAccount));
+                // AppContainer processes (UWP apps, e.g. Xbox Game Bar widgets) are not covered by Everyone,
+                // named objects must explicitly grant ALL APPLICATION PACKAGES (S-1-15-2-1) to be opened by them.
+                // Use the SID directly as the identity reference: WinBuiltinAnyPackageSid does not reliably
+                // Translate() to an NTAccount under LocalSystem (throws IdentityNotMappedException), unlike Everyone.
+                var allAppPackages = new SecurityIdentifier(WellKnownSidType.WinBuiltinAnyPackageSid, null);
 
                 MemoryMappedFileSecurity security = new MemoryMappedFileSecurity();
                 security.AddAccessRule(
                     new AccessRule<MemoryMappedFileRights>(everyone, MemoryMappedFileRights.Read, AccessControlType.Allow));
+                security.AddAccessRule(
+                    new AccessRule<MemoryMappedFileRights>(allAppPackages, MemoryMappedFileRights.Read, AccessControlType.Allow));
 
                 MutexSecurity mtxSecSensors = new MutexSecurity();
                 mtxSecSensors.AddAccessRule(
                     new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+                mtxSecSensors.AddAccessRule(
+                    new MutexAccessRule(allAppPackages, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
 
                 mmfSensors = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_SENSORS, MMAP_SIZE * 1024,
                                                                MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None,
@@ -82,6 +91,8 @@ namespace LibreHardwareService {
 
                     mtxSecAllHardware.AddAccessRule(
                         new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+                    mtxSecAllHardware.AddAccessRule(
+                        new MutexAccessRule(allAppPackages, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
                     mutexAllHardware = new Mutex(false, Constants.MUTEXNAME_ALLHARDWARE);
                     mutexAllHardware.SetAccessControl(mtxSecAllHardware);
                     Log.info("Memory Mapped Files (non-persisted) created:\n{0}\n{1}\n{2}\nMutex:\n{3}\n{4}\n{5}\n",
@@ -98,6 +109,8 @@ namespace LibreHardwareService {
                 MutexSecurity mtxSecStatus = new MutexSecurity();
                 mtxSecStatus.AddAccessRule(
                     new MutexAccessRule(everyone, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+                mtxSecStatus.AddAccessRule(
+                    new MutexAccessRule(allAppPackages, MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
                 mutexStatus = new Mutex(false, Constants.MUTEXNAME_STATUS);
                 mutexStatus.SetAccessControl(mtxSecStatus);
             } catch (Exception ex) {

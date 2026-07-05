@@ -5,6 +5,7 @@
 
 /.vscode/**
 !/.vscode/tasks.json
+*.csproj.lscache
 
 # User-specific files
 *.rsuser

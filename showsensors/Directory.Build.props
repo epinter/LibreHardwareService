@@ -3,4 +3,9 @@
         <UseArtifactsOutput>true</UseArtifactsOutput>
         <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
     </PropertyGroup>
+    <Target Name="CleanArtifacts" AfterTargets="AfterClean">
+        <RemoveDir Directories="$(MSBuildThisFileDirectory)artifacts"
+                   Condition="Exists('$(MSBuildThisFileDirectory)artifacts')"
+                   ContinueOnError="WarnAndContinue" />
+    </Target>
 </Project>

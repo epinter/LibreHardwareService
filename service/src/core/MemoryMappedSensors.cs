@@ -140,11 +140,12 @@ namespace LibreHardwareService {
             }
             try {
                 int length = index.Length + data.Length;
+                var now = DateTime.Now;
                 if ((length / 1024) > MMAP_SIZE &&
-                    lastLogLimit < DateTime.Now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
+                    lastLogLimit < now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
                     Log.error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (length / 1024),
                               MMAP_SIZE);
-                    lastLogLimit = DateTime.Now;
+                    lastLogLimit = now;
                 }
 
                 int metadataBlockSize = 4 + metadata.MetadataSize;
@@ -245,11 +246,12 @@ namespace LibreHardwareService {
         }
 
         private void write(byte[] data, MemoryMappedViewAccessor acessor, Metadata metadata) {
+            var now = DateTime.Now;
             if ((data.Length / 1024) > MMAP_SIZE &&
-                lastLogLimit < DateTime.Now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
+                lastLogLimit < now.AddMinutes(-1 * Config.MemoryMapLimitLogIntervalMinutes)) {
                 Log.error("Data being written to memory map is {0} bytes, larger than the limit {1} kb", (data.Length / 1024),
                           MMAP_SIZE);
-                lastLogLimit = DateTime.Now;
+                lastLogLimit = now;
             }
             Debug.WriteLine("     -- WRITING {0}B of data", data.Length);
             int metadataBlockSize = 4 + metadata.MetadataSize;

@@ -61,13 +61,13 @@ namespace LibreHardwareService {
 
                 mmfSensors = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_SENSORS, MMAP_SIZE * 1024,
                                                                MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None,
-                                                               security, System.IO.HandleInheritability.Inheritable);
+                                                               security, System.IO.HandleInheritability.None);
 
                 acessorSensors = mmfSensors.CreateViewAccessor();
 
                 mmfStatus = MemoryMappedFileFactory.CreateNew(Constants.FILENAME_STATUS, MMAP_SIZE * 1024,
                                                               MemoryMappedFileAccess.ReadWrite, MemoryMappedFileOptions.None,
-                                                              security, System.IO.HandleInheritability.Inheritable);
+                                                              security, System.IO.HandleInheritability.None);
 
                 acessorStatus = mmfStatus.CreateViewAccessor();
 

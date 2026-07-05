@@ -17,6 +17,11 @@
 
         <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
 
+        <!-- Search for already installed version -->
+        <InstallUISequence>
+            <FindRelatedProducts After="AppSearch" />
+        </InstallUISequence>
+
         <!-- Allow upgrades and prevent downgrades -->
         <MajorUpgrade AllowSameVersionUpgrades="yes"
                       DowngradeErrorMessage="A later version of LibreHardwareService is already installed. Setup will now exit." />

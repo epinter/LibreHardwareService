@@ -18,7 +18,8 @@
         <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
 
         <!-- Allow upgrades and prevent downgrades -->
-        <MajorUpgrade DowngradeErrorMessage="A later version of LibreHardwareService is already installed. Setup will now exit." />
+        <MajorUpgrade AllowSameVersionUpgrades="yes"
+                      DowngradeErrorMessage="A later version of LibreHardwareService is already installed. Setup will now exit." />
 
         <!-- Define the directory structure -->
         <StandardDirectory Id="ProgramFiles64Folder">

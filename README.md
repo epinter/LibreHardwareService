@@ -14,10 +14,6 @@ LibreHardwareService is a Windows service that writes all sensors data from [Lib
 
 This service writes sensors data to shared memory (see [models](https://github.com/epinter/LibreHardwareService/tree/main/service/src/models) to know what kind of data is written). The permissions of the shared-memory files ([Non-persisted Memory-Mapped files](https://docs.microsoft.com/en-us/dotnet/standard/io/memory-mapped-files)) are set to permit all local users to read all the data, this way programs like Rainmeter doesn't have to run with administrative privileges. The shared memory doesn't contain sensitive information, the data written is exclusively related to hardware sensors (like hardware name, brand, sensor name, type, values,etc...) and status like S.M.A.R.T. The shared-memory is never read by this service, this means the everyone-read permission on the memory-mapped files doesn't represent a security risk to your system because the service ignores and overwrites any data written in the shared memory. No data is exposed to network.
 
-## Requiremens
-
-.NET 8.0
-
 ## Why another way to access LibreHardwareMonitor sensors ?
 
 While trying to use LibreHardwareMonitor with Rainmeter, I didn't find any way to make Rainmeter to access the sensor data without requiring administrative privileges and keeping low cpu usage (more than 30 sensors in the same skin). Running this service with a plugin in Rainmeter, I can keep the CPU usage lower than 0.5% versus 3% used by some other solutions. So I created this service and [LibHardwareService](https://github.com/epinter/lhwservice).

@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <LocalArtifactsFolder>$(MSBuildThisFileDirectory)artifacts\</LocalArtifactsFolder>
+        <BaseOutputPath>$(LocalArtifactsFolder)bin\</BaseOutputPath>
+        <BaseIntermediateOutputPath>$(LocalArtifactsFolder)obj\</BaseIntermediateOutputPath>
+        <MSBuildProjectExtensionsPath>$(LocalArtifactsFolder)obj\</MSBuildProjectExtensionsPath>
+    </PropertyGroup>
+    <Target Name="CleanArtifacts" AfterTargets="AfterClean">
+        <RemoveDir Directories="$(MSBuildThisFileDirectory)artifacts"
+                   Condition="Exists('$(MSBuildThisFileDirectory)artifacts')"
+                   ContinueOnError="WarnAndContinue" />
+    </Target>
+</Project>

@@ -211,7 +211,7 @@ namespace LibreHardwareService {
                 }
 
                 try {
-                    mutexSensors.ReleaseMutex();
+                    mutexAllHardware.ReleaseMutex();
                 } catch {
                     // if we catch the exception in the WaitOne when a client don't release the mutex, we can get a another here,
                     // so ignore it too
